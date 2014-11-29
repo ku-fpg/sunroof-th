@@ -1,5 +1,5 @@
 Name:                sunroof-th
-Version:             0.2.1
+Version:             0.2.2
 Synopsis:            Monadic Javascript Compiler - Template Haskell Utilities
 Homepage:            https://github.com/ku-fpg/sunroof-th
 Bug-reports:         https://github.com/ku-fpg/sunroof-th
@@ -25,7 +25,7 @@ Library
   build-depends:       base             >= 4.3.1 && < 5,
                        Boolean          >= 0.2,
                        template-haskell >= 2.8,
-                       sunroof-compiler >= 0.2.1
+                       sunroof-compiler >= 0.2.2
 
   GHC-options: -Wall -fno-warn-orphans
 
