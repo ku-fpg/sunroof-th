@@ -1,4 +1,5 @@
 
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# OPTIONS_GHC -fno-warn-name-shadowing #-}
@@ -65,7 +66,12 @@ deriveJSTuple decsQ = do
                 let tConTy = findClass ty
                 -- Next, find the type instance
                 let internalTy = case decls of
-                        [TySynInstD tyFun [_arg] internalTy] | tyFun == ''Internals -> internalTy
+#if MIN_VERSION_template_haskell(2,9,0)
+                        [TySynInstD tyFun (TySynEqn [_arg] internalTy)]
+#else
+                        [TySynInstD tyFun [_arg] internalTy]
+#endif
+                                | tyFun == ''Internals -> internalTy
                         _  -> error $ "can not find usable type instance inside JSTuple"
                 let findInternalStructure (TupleT _n) ts = do
                         vs <- sequence [ newName "v" | _ <- ts ]
@@ -125,7 +131,11 @@ deriveJSTuple decsQ = do
                            ]
                        , InstanceD cxt' (AppT (ConT ''IfB) ty)
                               [ ValD (VarP 'ifB) (NormalB (VarE 'jsIfB)) [] ]
+#if MIN_VERSION_template_haskell(2,9,0)
+                       , TySynInstD ''BooleanOf (TySynEqn [ty] (ConT ''JSBool))
+#else
                        , TySynInstD ''BooleanOf [ty] (ConT ''JSBool)
+#endif
                        , InstanceD cxt' (AppT (ConT ''JSTuple) ty) $ decls ++
                            [ FunD 'SRT.match
                               [Clause [VarP o] (NormalB (builder
